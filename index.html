@@ -1,13 +1,103 @@
+<!doctype html>
 <html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 78%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; width: 100%;}
+      #messages li { padding: 5px 10px; width: 100%;}
+      #messages li:nth-child(odd) { background: #eee; }
+      #messages { margin-bottom: 40px }
+
+      aside{
+        width: 12%;
+        margin: 10px;
+      }
+
+      #chat-area{
+        width: 85%
+      }
+
+      aside, #chat-area{
+        float:left;
+      }
+
+     aside ul{
+        margin: 20px 20px;
+     }
+     aside #wrap{
+        position: fixed;
+     }
+
+     h1{
+      position: fixed;
+     }
+    </style>
+  </head>
   <body>
     <p id='server-time'></p>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-      var el = document.getElementById('server-time');
+    <h1> Bienvenido al n4chat</h1>
 
-      socket.on('time', function(timeString) {
-        el.innerHTML = 'Server time: ' + timeString;
+    <div id="chat">
+      <aside>
+        <div id="wrap">
+          <br>
+          <br>
+          <h3> Canales</h3>
+          <hr>
+          <ul id="channels">
+            <li> Chanel 1</li>
+            <li> Chanel 2</li>
+            <li> Chanel 3</li>
+            <li> Chanel 4</li>
+          </ul>
+
+          <h3> Usuarios </h3>        
+          <hr>
+          <ul id="users">
+            <li> User 1</li>
+            <li> User 2</li>
+            <li> User 3</li>
+            <li> User 4</li>
+          </ul>
+        </div>
+       
+      </aside>
+
+      <div id="chat-area">
+        <ul id="messages"></ul>
+        <form action="">
+          <input id="m" autocomplete="off" /><button> > </button>
+        </form>
+      </div>
+
+
+    </div>
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+      $(function () {
+        var socket = io();
+
+        var el = document.getElementById('server-time');
+        socket.on('time', function(timeString) {
+          el.innerHTML = timeString;
+        });
+
+        $('form').submit(function(){
+          socket.emit('chat message', $('#m').val());
+          $('#m').val('');
+          return false;
+        });
+        socket.on('chat message', function(msg){
+          $('#messages').append($('<li>').text("- Juan: " + msg));
+          window.scrollTo(0, document.body.scrollHeight);
+        });
       });
     </script>
   </body>
