@@ -1,6 +1,6 @@
 {
-  "name": "Node.js Socket.io Example",
-  "description": "Part of the Using WebSockets on Heroku Tutorial",
+  "name": "Kirc",
+  "description": "Chat irc emulado",
   "repository": "https://github.com/heroku-examples/node-socket.io",
   "keywords": ["node", "websocket", "socket.io"]
 }
