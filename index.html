@@ -10,7 +10,7 @@
       form#send-msg button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 40px 20px; padding: 0; width: 100%;}
       #messages li { padding: 5px 10px; width: 100%;}
-      #messages li:nth-child(odd) { background: #eee; }
+      /*#messages li:nth-child(odd) { background: #eee; }*/
       #messages { margin-bottom: 40px }
 
       aside{
@@ -60,11 +60,14 @@
     <div id="chat">
       <aside>
         <div id="aside-wraper">
+          <a href="#salir" id="exit" > Salir </a> 
           <br>
           <br>
           <h3> Canales</h3>
           <hr>
-          <ul id="channels"> </ul>
+          <ul id="channels"> 
+            <li> n4chat </li>
+          </ul>
 
           <h3> Usuarios </h3>        
           <hr>
@@ -74,7 +77,7 @@
       </aside>
 
       <div id="chat-area">
-        <h1> Bienvenido al n4chat</h1>
+        <h1> Bienvenid@ al n4chat </h1>
         
         <div id="welcome">
           <form id="login" action="">
@@ -107,14 +110,6 @@
           var that = $(this)
 
           e.preventDefault()
-            /*
-          socket.on('get channels', function(channels){
-            console.log(channels)
-            for(var c in channels){
-              $("channels").append("<li>" + c + "</li>")
-            }
-          })
-            */
 
           if( $("#nick").val() == "" ) {
             $("#error").text("You need to choice a nick")
@@ -138,21 +133,45 @@
           })
 
           socket.on('login ok', function(d){
+             $('#nick').val('');
+             $('#error').text('');
             if (socket.sessionid != d.id) return false
 
             window.user = d.user;
+
+            window.onbeforeunload = function (e) {
+              //socket.emit('log out', { user: window.user });
+              e = e || window.event;
+              // For IE and Firefox prior to version 4
+              if (e) e.returnValue = 'Sure?';
+              // For Safari
+              return 'Sure?';
+            };
+
             that.fadeOut("slow", function(){
               $("#load").fadeIn("fast")
-              
+              $("#chat-area h1").append('<label id="nick">' + d.user.nick + '</label>')
               setTimeout(function(){ 
                 $("#load").remove()
                 $("#aside-wraper, #chat-wrapper").fadeIn("slow")
               }, 1000);
             })
+
+
             console.log(window.user)
           })
 
         });
+
+        socket.on('get users', function(users){
+          $("#users").fadeOut("slow", function(){
+          $("#users").empty()
+          for(i in users) 
+            $("#users")
+              .append("<li>" + users[i] + "</li>")
+            $("#users").fadeIn("slow")
+          })
+        })
 
         $('form#send-msg').on("submit", function(e){
           e.preventDefault()
@@ -169,15 +188,24 @@
           window.scrollTo(0, document.body.scrollHeight);
         });
 
-        /*CLOSE
-        window.onbeforeunload = function (e) {
-          e = e || window.event;
-          // For IE and Firefox prior to version 4
-          if (e) e.returnValue = 'Sure?';
-          // For Safari
-          return 'Sure?';
-        };
-        /**/
+        $("#exit").on("click", function(e){
+          e.preventDefault()
+          socket.emit('log out', { user: window.user });
+          
+          socket.on('exit', function(){
+            delete window.user;
+            $("#chat-area h1 #nick").remove()
+            
+            $("#aside-wraper, #chat-wrapper, #load")
+              .css("display", "none")
+            $("#login").fadeIn("slow")
+            
+            window.onbeforeunload = function (e) {};
+
+          });
+
+        })
+
 
       });
     </script>
