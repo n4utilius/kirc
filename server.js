@@ -6,13 +6,12 @@ const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const serveStatic = require('serve-static');
 
-
 const PORT = process.env.PORT || 3001;
 const INDEX = path.join(__dirname, 'index.html');
 
 const server = express()
+  .use(express.static('public'))
   .use((req, res) => res.sendFile(INDEX) )
-  .use(serveStatic(path.join(__dirname, 'public')))
   .listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 const io = socketIO(server);
@@ -64,9 +63,9 @@ io.on('connection', (socket) => {
         
     setTimeout(function(){ 
       io.emit('chat message', 
-        { nick: "n4", msg: "Bienvenid@ " + d.nick+ "!!!", color: "#d00" });
+        { nick: "n4", msg: "Welcome " + d.nick + "!!!", color: "#d00" });
       io.emit('get users', channels[d.channel].users);
-    }, 2000)
+    }, 2500)
 
   });  
 

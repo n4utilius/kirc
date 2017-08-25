@@ -1,83 +1,26 @@
 <!doctype html>
 <html>
   <head>
-    <title>Socket.IO chat</title>
-    <style>
-       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      form#send-msg { background: #000; padding: 3px; position: fixed; bottom: 0; width: 85%; }
-      form#send-msg input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form#send-msg button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 40px 20px; padding: 0; width: 100%;}
-      #messages li { padding: 5px 10px; width: 100%;}
-      /*#messages li:nth-child(odd) { background: #eee; }*/
-      #messages { margin-bottom: 40px }
-
-      aside{
-        width: 8%;
-        margin: 10px;
-      }
-
-      #chat-area{
-        width: 85%
-      }
-
-      aside, #chat-area{
-        float:left;
-        margin: 10px;
-      }
-
-     aside ul{
-        margin: 20px 20px;
-     }
-     aside #aside-wraper{
-        position: fixed;
-        display: none
-     }
-
-     #chat-wrapper, #load{
-      display: none;
-     }
-    
-     #welcome { margin: 60px 0px; padding: 0; width: 100%;}
-
-     #error{
-      color: red;
-     }
-
-     h1, #server-time{
-        position: fixed;
-        padding: 10px 0px;
-        background: white;
-        top: 0;
-        width: 100%;
-    }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/furatto_3.1.1/furatto.css">
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
+    <title> Kirc v1 </title>
   </head>
   <body>
-    
-
     <div id="chat">
       <aside>
         <div id="aside-wraper">
-          <a href="#salir" id="exit" > Salir </a> 
-          <br>
-          <br>
-          <h3> Canales</h3>
-          <hr>
-          <ul id="channels"> 
-            <li> n4chat </li>
-          </ul>
+          <a href="#salir" id="exit" > Log out </a> 
+          <h3> Channels</h3><hr>
+          <ul id="channels"> <li> n4chat </li> </ul>
 
-          <h3> Usuarios </h3>        
-          <hr>
+          <h3> Users </h3><hr>
           <ul id="users"> </ul>
         </div>
        
       </aside>
 
       <div id="chat-area">
-        <h1> Bienvenid@ al n4chat </h1>
+        <h1> Welcome to Kirc!!</h1>
         
         <div id="welcome">
           <form id="login" action="">
@@ -86,13 +29,13 @@
             <button> Log in </button>
           </form>
           <p id="error"></p>
-          <p id="load"> Cargando... <p>
+          <p id="load"> Loading... <p>
         </div>
 
         <div id="chat-wrapper">
           <ul id="messages"></ul>
           <form id= "send-msg" action="">
-            <input id="m" autocomplete="off" /><button> > </button>
+            <input id="m" autocomplete="off" /><button> Send </button>
           </form>
         </div>
       </div>
@@ -101,7 +44,7 @@
     </div>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/js/jquery-1.11.1.js"></script>
     <script>
       $(function () {
         var socket = io();
@@ -138,7 +81,7 @@
             if (socket.sessionid != d.id) return false
 
             window.user = d.user;
-
+            /*
             window.onbeforeunload = function (e) {
               //socket.emit('log out', { user: window.user });
               e = e || window.event;
@@ -147,10 +90,10 @@
               // For Safari
               return 'Sure?';
             };
-
+            */
             that.fadeOut("slow", function(){
               $("#load").fadeIn("fast")
-              $("#chat-area h1").append('<label id="nick">' + d.user.nick + '</label>')
+              $("#chat-area h1 #nick").text(d.user.nick)//append('<span id="nick">' + d.user.nick + '</span>')
               setTimeout(function(){ 
                 $("#load").remove()
                 $("#aside-wraper, #chat-wrapper").fadeIn("slow")
@@ -183,7 +126,7 @@
           $('#messages')
             .append(
               $('<li style="color:' + data.color + ' ">')
-                .text("- " + data.nick + ": " + data.msg)
+                .html("<b>- " + data.nick + ":</b> " + data.msg)
             );
           window.scrollTo(0, document.body.scrollHeight);
         });
@@ -194,7 +137,7 @@
           
           socket.on('exit', function(){
             delete window.user;
-            $("#chat-area h1 #nick").remove()
+            $("#chat-area h1 #nick").text("")
             
             $("#aside-wraper, #chat-wrapper, #load")
               .css("display", "none")
